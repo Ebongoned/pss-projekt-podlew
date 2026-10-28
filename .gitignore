@@ -1,0 +1,34 @@
+# Środowisko wirtualne Pythona
+.venv/
+venv/
+
+# Pliki tymczasowe Pythona
+__pycache__/
+*.py[cod]
+
+# Sekrety i konfiguracja lokalna — NIGDY do repozytorium
+.env
+postman/prywatne/
+
+# Lokalna baza SQLite
+*.db
+*.db-journal
+
+# Wyniki testów, pokrycia i raportów
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.hypothesis/
+.schemathesis/
+schemathesis-report/
+newman/
+postman-cli-reports/
+reports/
+*.log
+
+# Edytory i system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

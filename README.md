@@ -12,7 +12,7 @@ własne REST API, które zespół projektuje, testuje i prezentuje.
 
 ## Pomysły na temat projektu (wybór w LAB 08)
 
-- do ustalenia
+- system ochładzania serwerowni bo za ciepło (Juliusz Podraska)
 
 ## Jak pracujemy
 

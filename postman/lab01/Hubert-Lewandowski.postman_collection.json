@@ -1,2588 +1,740 @@
 {
   "info": {
-    "_postman_id": "6ba992a3-b542-4205-a0a7-f6258d194f26",
-    "name": "PSS — publiczne API (LAB 01–02)",
-    "description": "Kolekcja referencyjna do LAB 01–02 z przedmiotu Projektowanie serwisów sieciowych (Politechnika Bydgoska, prowadzący: Leonid Rusanov).\n\nImport: Postman → Import → ten plik oraz `publiczne.postman_environment.json`. Folder LAB 02 wymaga wybrania środowiska „PSS — publiczne API”.\n\nZasady: API są publiczne — nie wpisuj danych osobowych; usuwaj książki dodane w Library API (zapytania DELETE w kolekcji robią to automatycznie). Nie uruchamiaj całej kolekcji w pętli (Iterations > 1) — z tych samych API korzysta cała sala przez jeden adres IP.\n\nTesty sterowane danymi (LAB 02, folder 5) uruchamia się w Postman CLI lub Newmanie z plikiem `dane/waluty-nbp.csv`, bo w planie Free Collection Runner nie wczytuje plików danych.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "_postman_id": "f5187da3-3bfe-46c4-abcc-b247198623ee",
+    "name": "LAB 01 - moje zapytania",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58899835",
+    "_collection_link": "https://go.postman.co/collection/58899835-f5187da3-3bfe-46c4-abcc-b247198623ee?source=collection_link"
   },
   "item": [
     {
-      "name": "LAB 01 — pierwsze zapytania",
-      "item": [
-        {
-          "name": "1. Postman Echo — anatomia zapytania i odpowiedzi",
-          "item": [
-            {
-              "name": "GET z parametrami zapytania",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Serwer odebrał parametry zapytania\", () => {",
-                      "    const json = pm.response.json();",
-                      "    pm.expect(json.args.course).to.eql(\"pss\");",
-                      "    pm.expect(json.args.lab).to.eql(\"01\");",
-                      "});",
-                      "pm.test(\"Czas odpowiedzi poniżej 3000 ms\", () => {",
-                      "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{echo_url}}/get?course=pss&lab=01",
-                  "host": [
-                    "{{echo_url}}"
-                  ],
-                  "path": [
-                    "get"
-                  ],
-                  "query": [
-                    {
-                      "key": "course",
-                      "value": "pss",
-                      "description": "nazwa kursu"
-                    },
-                    {
-                      "key": "lab",
-                      "value": "01",
-                      "description": "numer zajęć"
-                    }
-                  ]
-                },
-                "description": "Postman Echo odsyła w polu `args` parametry zapytania (query string), które od nas dostał."
-              }
-            },
-            {
-              "name": "Nagłówki: Accept i własny X-Student",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Serwer odebrał nagłówki Accept i X-Student\", () => {",
-                      "    // Postman Echo zwraca nazwy nagłówków małymi literami.",
-                      "    const headers = pm.response.json().headers;",
-                      "    pm.expect(headers[\"accept\"]).to.eql(\"application/json\");",
-                      "    pm.expect(headers[\"x-student\"]).to.eql(\"pss-student\");",
-                      "});",
-                      "pm.test(\"Odpowiedź jest w formacie JSON\", () => {",
-                      "    pm.response.to.have.header(\"Content-Type\");",
-                      "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "X-Student",
-                    "value": "pss-student"
-                  }
-                ],
-                "url": {
-                  "raw": "{{echo_url}}/headers",
-                  "host": [
-                    "{{echo_url}}"
-                  ],
-                  "path": [
-                    "headers"
-                  ]
-                },
-                "description": "Endpoint `/headers` odsyła nagłówki, które naprawdę dotarły do serwera (także te dodane automatycznie przez Postmana)."
-              }
-            },
-            {
-              "name": "POST z treścią JSON",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Serwer odebrał treść JSON\", () => {",
-                      "    const json = pm.response.json();",
-                      "    pm.expect(json.json.device).to.eql(\"czujnik-01\");",
-                      "    pm.expect(json.json.temperature).to.eql(21.5);",
-                      "    pm.expect(json.headers[\"content-type\"]).to.include(\"application/json\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{echo_url}}/post",
-                  "host": [
-                    "{{echo_url}}"
-                  ],
-                  "path": [
-                    "post"
-                  ]
-                },
-                "description": "Treść (body) w formacie JSON. Echo zwraca ją w polu `json`.",
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"device\": \"czujnik-01\",\n  \"temperature\": 21.5,\n  \"unit\": \"C\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "name": "Wybrany kod statusu (404)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 404 Not Found\", () => {",
-                      "    pm.response.to.have.status(404);",
-                      "});",
-                      "pm.test(\"Treść odpowiedzi zawiera ten sam kod\", () => {",
-                      "    pm.expect(pm.response.json().status).to.eql(404);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{echo_url}}/status/404",
-                  "host": [
-                    "{{echo_url}}"
-                  ],
-                  "path": [
-                    "status",
-                    "404"
-                  ]
-                },
-                "description": "Zmień liczbę w ścieżce (np. 201, 400, 500), żeby zobaczyć inne kody statusu."
-              }
-            },
-            {
-              "name": "Basic Auth — poprawne dane",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Uwierzytelnienie udane\", () => {",
-                      "    pm.expect(pm.response.json().authenticated).to.be.true;",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{echo_url}}/basic-auth",
-                  "host": [
-                    "{{echo_url}}"
-                  ],
-                  "path": [
-                    "basic-auth"
-                  ]
-                },
-                "description": "Dane demonstracyjne z dokumentacji Postman Echo: `postman` / `password`. Postman zamienia je na nagłówek `Authorization: Basic ...` (Base64, to NIE jest szyfrowanie).",
-                "auth": {
-                  "type": "basic",
-                  "basic": [
-                    {
-                      "key": "username",
-                      "value": "postman",
-                      "type": "string"
-                    },
-                    {
-                      "key": "password",
-                      "value": "password",
-                      "type": "string"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "Basic Auth — złe hasło (401)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 401 Unauthorized\", () => {",
-                      "    pm.response.to.have.status(401);",
-                      "});",
-                      "pm.test(\"Nagłówek WWW-Authenticate podaje schemat Basic\", () => {",
-                      "    pm.response.to.have.header(\"WWW-Authenticate\");",
-                      "    pm.expect(pm.response.headers.get(\"WWW-Authenticate\")).to.include(\"Basic\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{echo_url}}/basic-auth",
-                  "host": [
-                    "{{echo_url}}"
-                  ],
-                  "path": [
-                    "basic-auth"
-                  ]
-                },
-                "description": "Złe hasło: serwer odpowiada 401 i nagłówkiem `WWW-Authenticate`.",
-                "auth": {
-                  "type": "basic",
-                  "basic": [
-                    {
-                      "key": "username",
-                      "value": "postman",
-                      "type": "string"
-                    },
-                    {
-                      "key": "password",
-                      "value": "zle-haslo",
-                      "type": "string"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "Opóźniona odpowiedź (2 s)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Odpowiedź przyszła po co najmniej 2 s\", () => {",
-                      "    pm.expect(pm.response.responseTime).to.be.at.least(2000);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{echo_url}}/delay/2",
-                  "host": [
-                    "{{echo_url}}"
-                  ],
-                  "path": [
-                    "delay",
-                    "2"
-                  ]
-                },
-                "description": "Serwer czeka 2 sekundy. Obserwuj czas odpowiedzi (Time) w Postmanie."
-              }
-            }
+      "name": "ECHO - GET z parametrami",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://postman-echo.com/get?course=pss\\&lab=01",
+          "protocol": "https",
+          "host": [
+            "postman-echo",
+            "com"
           ],
-          "description": "Postman Echo (https://postman-echo.com) niczego nie zapisuje — odsyła to, co od nas dostał."
-        },
-        {
-          "name": "2. JSONPlaceholder — CRUD tylko na niby",
-          "item": [
-            {
-              "name": "GET lista wpisów z filtrem userId=1",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Zwrócono 10 wpisów użytkownika 1\", () => {",
-                      "    const posts = pm.response.json();",
-                      "    pm.expect(posts).to.be.an(\"array\").with.lengthOf(10);",
-                      "    posts.forEach(post => pm.expect(post.userId).to.eql(1));",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{jsonplaceholder_url}}/posts?userId=1",
-                  "host": [
-                    "{{jsonplaceholder_url}}"
-                  ],
-                  "path": [
-                    "posts"
-                  ],
-                  "query": [
-                    {
-                      "key": "userId",
-                      "value": "1",
-                      "description": "filtr: wpisy użytkownika 1"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "GET jeden wpis /posts/1",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Wpis ma id 1 i cztery pola\", () => {",
-                      "    const post = pm.response.json();",
-                      "    pm.expect(post.id).to.eql(1);",
-                      "    pm.expect(post).to.have.all.keys(\"userId\", \"id\", \"title\", \"body\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{jsonplaceholder_url}}/posts/1",
-                  "host": [
-                    "{{jsonplaceholder_url}}"
-                  ],
-                  "path": [
-                    "posts",
-                    "1"
-                  ]
-                }
-              }
-            },
-            {
-              "name": "POST nowy wpis (201, ale nic się nie zapisze)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 201 Created\", () => {",
-                      "    pm.response.to.have.status(201);",
-                      "});",
-                      "pm.test(\"Nagłówek Location wskazuje nowy zasób\", () => {",
-                      "    pm.expect(pm.response.headers.get(\"Location\")).to.match(/\\/posts\\/\\d+$/);",
-                      "});",
-                      "const post = pm.response.json();",
-                      "pm.test(\"Serwer nadał identyfikator\", () => {",
-                      "    pm.expect(post.id).to.be.a(\"number\");",
-                      "});",
-                      "// Zapisujemy id, żeby w następnym zapytaniu sprawdzić, czy wpis naprawdę istnieje.",
-                      "pm.collectionVariables.set(\"post_id\", post.id);"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{jsonplaceholder_url}}/posts",
-                  "host": [
-                    "{{jsonplaceholder_url}}"
-                  ],
-                  "path": [
-                    "posts"
-                  ]
-                },
-                "description": "JSONPlaceholder odpowiada 201 Created i nadaje id 101, ale **niczego nie zapisuje**.",
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"title\": \"Pomiar z czujnika\",\n  \"body\": \"Temperatura 21.5 °C\",\n  \"userId\": 1\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "name": "GET utworzony wpis → 404 (dowód udawanego zapisu)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 404 — JSONPlaceholder niczego nie zapisał\", () => {",
-                      "    pm.response.to.have.status(404);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{jsonplaceholder_url}}/posts/{{post_id}}",
-                  "host": [
-                    "{{jsonplaceholder_url}}"
-                  ],
-                  "path": [
-                    "posts",
-                    "{{post_id}}"
-                  ]
-                },
-                "description": "Na LAB 01 wpisz ręcznie `/posts/101`. Zmienna `post_id` pochodzi ze skryptu POST."
-              }
-            },
-            {
-              "name": "PUT zastąp wpis 1",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Odpowiedź zawiera nową wersję wpisu\", () => {",
-                      "    pm.expect(pm.response.json().title).to.eql(\"Nowy tytuł\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "PUT",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{jsonplaceholder_url}}/posts/1",
-                  "host": [
-                    "{{jsonplaceholder_url}}"
-                  ],
-                  "path": [
-                    "posts",
-                    "1"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"id\": 1,\n  \"title\": \"Nowy tytuł\",\n  \"body\": \"Nowa treść\",\n  \"userId\": 1\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "name": "PATCH zmień tylko tytuł wpisu 1",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Zmienił się tylko tytuł, reszta pól została\", () => {",
-                      "    const post = pm.response.json();",
-                      "    pm.expect(post.title).to.eql(\"Zmieniony tytuł\");",
-                      "    pm.expect(post.body).to.be.a(\"string\").and.not.be.empty;",
-                      "    pm.expect(post.userId).to.eql(1);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{jsonplaceholder_url}}/posts/1",
-                  "host": [
-                    "{{jsonplaceholder_url}}"
-                  ],
-                  "path": [
-                    "posts",
-                    "1"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"title\": \"Zmieniony tytuł\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "name": "DELETE usuń wpis 1",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "DELETE",
-                "header": [],
-                "url": {
-                  "raw": "{{jsonplaceholder_url}}/posts/1",
-                  "host": [
-                    "{{jsonplaceholder_url}}"
-                  ],
-                  "path": [
-                    "posts",
-                    "1"
-                  ]
-                }
-              }
-            },
-            {
-              "name": "GET wpis 1 po DELETE — nadal istnieje",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Wpis 1 nadal istnieje — usunięcie też było udawane\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "    pm.expect(pm.response.json().id).to.eql(1);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{jsonplaceholder_url}}/posts/1",
-                  "host": [
-                    "{{jsonplaceholder_url}}"
-                  ],
-                  "path": [
-                    "posts",
-                    "1"
-                  ]
-                }
-              }
-            }
+          "path": [
+            "get"
           ],
-          "description": "JSONPlaceholder przyjmuje POST/PUT/PATCH/DELETE i odpowiada poprawnymi kodami, ale zapis jest tylko symulowany (https://jsonplaceholder.typicode.com/guide/)."
-        },
-        {
-          "name": "3. Library API — prawdziwy zapis",
-          "item": [
+          "query": [
             {
-              "name": "GET książka ze stałej kolekcji",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"To książka ze stałej kolekcji\", () => {",
-                      "    const book = pm.response.json();",
-                      "    pm.expect(book.title).to.eql(\"Ficciones\");",
-                      "    pm.expect(book.isPermanentCollection).to.be.true;",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "{{permanent_book_id}}",
-                      "description": "id książki (UUID)"
-                    }
-                  ]
-                }
-              }
+              "key": "course",
+              "value": "pss\\"
             },
             {
-              "name": "GET wyszukiwanie: search=borges, genre=fiction",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Każdy wynik ma gatunek fiction\", () => {",
-                      "    const books = pm.response.json();",
-                      "    pm.expect(books).to.be.an(\"array\").that.is.not.empty;",
-                      "    books.forEach(book => pm.expect(book.genre.toLowerCase()).to.eql(\"fiction\"));",
-                      "});",
-                      "pm.test(\"Wyniki zawierają książkę ze stałej kolekcji\", () => {",
-                      "    const ids = pm.response.json().map(book => book.id);",
-                      "    pm.expect(ids).to.include(pm.collectionVariables.get(\"permanent_book_id\"));",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books?search=borges&genre=fiction",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books"
-                  ],
-                  "query": [
-                    {
-                      "key": "search",
-                      "value": "borges",
-                      "description": "szukaj w tytule i autorze"
-                    },
-                    {
-                      "key": "genre",
-                      "value": "fiction",
-                      "description": "filtr gatunku"
-                    }
-                  ]
-                },
-                "description": "Bez filtrów `/books` zwraca kilka tysięcy książek (ponad 1 MB) — zawsze filtruj."
-              }
-            },
-            {
-              "name": "POST dodaj książkę (201, klucz w nagłówku)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 201 Created\", () => {",
-                      "    pm.response.to.have.status(201);",
-                      "});",
-                      "const book = pm.response.json();",
-                      "pm.test(\"Serwer nadał identyfikator (UUID)\", () => {",
-                      "    pm.expect(book.id).to.match(/^[0-9a-f-]{36}$/);",
-                      "});",
-                      "// Na LAB 01 id kopiujemy ręcznie. Ta linia robi to samo automatycznie (więcej na LAB 02).",
-                      "pm.collectionVariables.set(\"book_id\", book.id);"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "api-key",
-                    "value": "postmanrulz"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books"
-                  ]
-                },
-                "description": "Zapis wymaga nagłówka `api-key` z publicznym kluczem szkoleniowym `postmanrulz`. Na LAB 01 wpisujemy go ręcznie w zakładce Headers; na LAB 02 przeniesiemy go do środowiska i autoryzacji folderu. Nie wpisuj danych osobowych — API jest publiczne.",
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"title\": \"Moja pierwsza książka w API\",\n  \"author\": \"pss-lab01\",\n  \"genre\": \"pss-lab\",\n  \"yearPublished\": 2026\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "name": "GET dodana książka — naprawdę zapisana",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 — książka naprawdę istnieje\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "pm.test(\"To nasza książka\", () => {",
-                      "    pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get(\"book_id\"));",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "{{book_id}}",
-                      "description": "id z odpowiedzi na POST"
-                    }
-                  ]
-                },
-                "description": "Na LAB 01 wklej id z odpowiedzi na POST w Params → Path Variables."
-              }
-            },
-            {
-              "name": "PATCH wypożycz książkę",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Książka jest wypożyczona (checkedOut = true)\", () => {",
-                      "    pm.expect(pm.response.json().checkedOut).to.be.true;",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "api-key",
-                    "value": "postmanrulz"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "{{book_id}}",
-                      "description": "id z odpowiedzi na POST"
-                    }
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"checkedOut\": true\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "name": "DELETE usuń swoją książkę (204)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 204 No Content\", () => {",
-                      "    pm.response.to.have.status(204);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "DELETE",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "api-key",
-                    "value": "postmanrulz"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "{{book_id}}",
-                      "description": "id z odpowiedzi na POST"
-                    }
-                  ]
-                },
-                "description": "Sprzątamy po sobie: usuwamy tylko książki dodane przez siebie."
-              }
-            },
-            {
-              "name": "GET usunięta książka → 404",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 404 — tym razem książka naprawdę zniknęła\", () => {",
-                      "    pm.response.to.have.status(404);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "{{book_id}}",
-                      "description": "id usuniętej książki"
-                    }
-                  ]
-                }
-              }
+              "key": "lab",
+              "value": "01"
             }
-          ],
-          "description": "Postman Library API v2 (https://library-api.postmanlabs.com) — szkoleniowe API Postmana, które naprawdę zapisuje dane (publicznie widoczne dla wszystkich). Książki spoza stałej kolekcji są automatycznie usuwane w cyklu trzydniowym. Klucz `postmanrulz` jest publicznym kluczem szkoleniowym z dokumentacji: https://documenter.getpostman.com/view/15567703/UVyxRtng"
-        },
-        {
-          "name": "4. NBP — kursy walut",
-          "item": [
-            {
-              "name": "Kurs EUR — JSON (Accept: application/json)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Odpowiedź w formacie JSON\", () => {",
-                      "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
-                      "});",
-                      "pm.test(\"Kurs średni EUR jest liczbą dodatnią\", () => {",
-                      "    const json = pm.response.json();",
-                      "    pm.expect(json.code).to.eql(\"EUR\");",
-                      "    pm.expect(json.rates[0].mid).to.be.a(\"number\").and.above(0);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Connection",
-                    "value": "close"
-                  }
-                ],
-                "url": {
-                  "raw": "{{nbp_url}}/exchangerates/rates/a/eur/",
-                  "host": [
-                    "{{nbp_url}}"
-                  ],
-                  "path": [
-                    "exchangerates",
-                    "rates",
-                    "a",
-                    "eur",
-                    ""
-                  ]
-                },
-                "description": "Tabela A = kursy średnie. Format wybieramy nagłówkiem Accept (negocjacja treści)."
-              }
-            },
-            {
-              "name": "Kurs EUR — XML (Accept: application/xml)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Odpowiedź w formacie XML\", () => {",
-                      "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/xml\");",
-                      "    pm.expect(pm.response.text()).to.include(\"<Code>EUR</Code>\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/xml"
-                  },
-                  {
-                    "key": "Connection",
-                    "value": "close"
-                  }
-                ],
-                "url": {
-                  "raw": "{{nbp_url}}/exchangerates/rates/a/eur/",
-                  "host": [
-                    "{{nbp_url}}"
-                  ],
-                  "path": [
-                    "exchangerates",
-                    "rates",
-                    "a",
-                    "eur",
-                    ""
-                  ]
-                },
-                "description": "Ten sam adres, inny nagłówek Accept — inna reprezentacja zasobu."
-              }
-            },
-            {
-              "name": "Ostatnie 5 kursów USD (last/5)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Zwrócono 5 ostatnich notowań\", () => {",
-                      "    pm.expect(pm.response.json().rates).to.have.lengthOf(5);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Connection",
-                    "value": "close"
-                  }
-                ],
-                "url": {
-                  "raw": "{{nbp_url}}/exchangerates/rates/a/usd/last/5/?format=json",
-                  "host": [
-                    "{{nbp_url}}"
-                  ],
-                  "path": [
-                    "exchangerates",
-                    "rates",
-                    "a",
-                    "usd",
-                    "last",
-                    "5",
-                    ""
-                  ],
-                  "query": [
-                    {
-                      "key": "format",
-                      "value": "json",
-                      "description": "format odpowiedzi"
-                    }
-                  ]
-                },
-                "description": "Format można wybrać też parametrem `?format=json` zamiast nagłówka Accept."
-              }
-            },
-            {
-              "name": "Tabela A — kursy średnie wszystkich walut",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Tabela A zawiera EUR i USD\", () => {",
-                      "    const codes = pm.response.json()[0].rates.map(rate => rate.code);",
-                      "    pm.expect(codes).to.include.members([\"EUR\", \"USD\"]);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Connection",
-                    "value": "close"
-                  }
-                ],
-                "url": {
-                  "raw": "{{nbp_url}}/exchangerates/tables/a/?format=json",
-                  "host": [
-                    "{{nbp_url}}"
-                  ],
-                  "path": [
-                    "exchangerates",
-                    "tables",
-                    "a",
-                    ""
-                  ],
-                  "query": [
-                    {
-                      "key": "format",
-                      "value": "json",
-                      "description": "format odpowiedzi"
-                    }
-                  ]
-                }
-              }
-            }
-          ],
-          "description": "API NBP (https://api.nbp.pl/) — bez klucza, tylko GET. Kursy publikowane w dni robocze; `/today/` w weekend zwraca 404, dlatego używamy bieżącego kursu bez `/today/`.\n\nNagłówek `Connection: close`: serwer NBP zamyka nieużywane połączenia po ok. 1–2 s. Gdy Runner lub Newman wysyła zapytania szybko jedno po drugim, może trafić na właśnie zamykane połączenie i zgłosić błąd „socket hang up”. `Connection: close` każe zamknąć połączenie po odpowiedzi, więc każde zapytanie otwiera nowe. Przy ręcznym wysyłaniu (Send) ten nagłówek nie jest potrzebny."
-        },
-        {
-          "name": "5. Open-Meteo — pogoda w Bydgoszczy",
-          "item": [
-            {
-              "name": "Aktualna pogoda w Bydgoszczy",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Jest aktualna temperatura w °C\", () => {",
-                      "    const json = pm.response.json();",
-                      "    pm.expect(json.current.temperature_2m).to.be.a(\"number\");",
-                      "    pm.expect(json.current_units.temperature_2m).to.eql(\"°C\");",
-                      "    pm.expect(json.timezone).to.eql(\"Europe/Warsaw\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{meteo_url}}/forecast?latitude=53.1235&longitude=18.0076&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone=Europe/Warsaw",
-                  "host": [
-                    "{{meteo_url}}"
-                  ],
-                  "path": [
-                    "forecast"
-                  ],
-                  "query": [
-                    {
-                      "key": "latitude",
-                      "value": "53.1235",
-                      "description": "szerokość geograficzna Bydgoszczy"
-                    },
-                    {
-                      "key": "longitude",
-                      "value": "18.0076",
-                      "description": "długość geograficzna Bydgoszczy"
-                    },
-                    {
-                      "key": "current",
-                      "value": "temperature_2m,relative_humidity_2m,wind_speed_10m",
-                      "description": "zmienne bieżącej pogody"
-                    },
-                    {
-                      "key": "timezone",
-                      "value": "Europe/Warsaw",
-                      "description": "strefa czasowa znaczników czasu"
-                    }
-                  ]
-                },
-                "description": "Współrzędne z geokodera Open-Meteo (GeoNames 3102014): 53.1235, 18.0076."
-              }
-            },
-            {
-              "name": "Prognoza godzinowa na 1 dzień",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Tyle samo godzin co wartości temperatury\", () => {",
-                      "    const hourly = pm.response.json().hourly;",
-                      "    pm.expect(hourly.temperature_2m).to.have.lengthOf(hourly.time.length);",
-                      "    // Zwykle 24; w dniu zmiany czasu może być 23 lub 25.",
-                      "    pm.expect(hourly.time.length).to.be.within(23, 25);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{meteo_url}}/forecast?latitude=53.1235&longitude=18.0076&hourly=temperature_2m&forecast_days=1&timezone=Europe/Warsaw",
-                  "host": [
-                    "{{meteo_url}}"
-                  ],
-                  "path": [
-                    "forecast"
-                  ],
-                  "query": [
-                    {
-                      "key": "latitude",
-                      "value": "53.1235",
-                      "description": "szerokość geograficzna Bydgoszczy"
-                    },
-                    {
-                      "key": "longitude",
-                      "value": "18.0076",
-                      "description": "długość geograficzna Bydgoszczy"
-                    },
-                    {
-                      "key": "hourly",
-                      "value": "temperature_2m",
-                      "description": "temperatura co godzinę"
-                    },
-                    {
-                      "key": "forecast_days",
-                      "value": "1",
-                      "description": "liczba dni prognozy"
-                    },
-                    {
-                      "key": "timezone",
-                      "value": "Europe/Warsaw",
-                      "description": "strefa czasowa znaczników czasu"
-                    }
-                  ]
-                }
-              }
-            }
-          ],
-          "description": "Open-Meteo (https://open-meteo.com/) — bez klucza, użycie niekomercyjne, dane na licencji CC BY 4.0 (podaj źródło danych)."
+          ]
         }
-      ],
-      "description": "Pierwsze zapytania HTTP do publicznych API: metody, parametry, nagłówki, kody statusu, formaty JSON i XML. Wymaga tylko zmiennych kolekcji (bez środowiska)."
+      },
+      "response": []
     },
     {
-      "name": "LAB 02 — zmienne, środowiska, testy",
-      "item": [
-        {
-          "name": "1. Zmienne kolekcji i środowiska",
-          "item": [
-            {
-              "name": "NBP — kurs waluty ze zmiennej currency_code",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Kurs dotyczy waluty ze zmiennej currency_code\", () => {",
-                      "    // pm.variables.get zwraca wartość z najwęższego zakresu:",
-                      "    // dane iteracji > środowisko > kolekcja > zmienne globalne.",
-                      "    const expected = pm.variables.get(\"currency_code\").toUpperCase();",
-                      "    pm.expect(pm.response.json().code).to.eql(expected);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Connection",
-                    "value": "close"
-                  }
-                ],
-                "url": {
-                  "raw": "{{nbp_url}}/exchangerates/rates/a/{{currency_code}}/",
-                  "host": [
-                    "{{nbp_url}}"
-                  ],
-                  "path": [
-                    "exchangerates",
-                    "rates",
-                    "a",
-                    "{{currency_code}}",
-                    ""
-                  ]
-                },
-                "description": "`currency_code` jest zdefiniowana w kolekcji (usd) i w środowisku (eur). Wygrywa węższy zakres — środowisko. Wyłącz środowisko (No environment) i porównaj."
-              }
-            },
-            {
-              "name": "Open-Meteo — geokodowanie miasta ze zmiennej city",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "const results = pm.response.json().results || [];",
-                      "pm.test(\"Znaleziono miasto ze zmiennej city\", () => {",
-                      "    pm.expect(results).to.not.be.empty;",
-                      "    pm.expect(results[0].name).to.eql(pm.variables.get(\"city\"));",
-                      "    pm.expect(results[0].country_code).to.eql(\"PL\");",
-                      "});",
-                      "// Zapisujemy współrzędne w aktywnym środowisku — użyje ich następne zapytanie.",
-                      "if (results.length > 0) {",
-                      "    pm.environment.set(\"latitude\", results[0].latitude);",
-                      "    pm.environment.set(\"longitude\", results[0].longitude);",
-                      "}"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{geocoding_url}}/search?name={{city}}&count=1&language=pl&format=json",
-                  "host": [
-                    "{{geocoding_url}}"
-                  ],
-                  "path": [
-                    "search"
-                  ],
-                  "query": [
-                    {
-                      "key": "name",
-                      "value": "{{city}}",
-                      "description": "nazwa miasta ze środowiska"
-                    },
-                    {
-                      "key": "count",
-                      "value": "1",
-                      "description": "liczba wyników"
-                    },
-                    {
-                      "key": "language",
-                      "value": "pl",
-                      "description": "język nazw"
-                    },
-                    {
-                      "key": "format",
-                      "value": "json",
-                      "description": "format odpowiedzi"
-                    }
-                  ]
-                },
-                "description": "Skrypt zapisuje współrzędne w środowisku (pm.environment.set)."
-              }
-            },
-            {
-              "name": "Open-Meteo — pogoda dla współrzędnych ze zmiennych",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Pogoda dotyczy współrzędnych ze zmiennych\", () => {",
-                      "    const json = pm.response.json();",
-                      "    // Open-Meteo zaokrągla współrzędne do najbliższego punktu siatki modelu pogody.",
-                      "    pm.expect(json.latitude).to.be.closeTo(Number(pm.variables.get(\"latitude\")), 0.1);",
-                      "    pm.expect(json.longitude).to.be.closeTo(Number(pm.variables.get(\"longitude\")), 0.1);",
-                      "});",
-                      "pm.test(\"Temperatura w rozsądnym zakresie (od -40 do 45 °C)\", () => {",
-                      "    pm.expect(pm.response.json().current.temperature_2m).to.be.within(-40, 45);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{meteo_url}}/forecast?latitude={{latitude}}&longitude={{longitude}}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone=Europe/Warsaw",
-                  "host": [
-                    "{{meteo_url}}"
-                  ],
-                  "path": [
-                    "forecast"
-                  ],
-                  "query": [
-                    {
-                      "key": "latitude",
-                      "value": "{{latitude}}",
-                      "description": "ze środowiska (ustawia poprzednie zapytanie)"
-                    },
-                    {
-                      "key": "longitude",
-                      "value": "{{longitude}}",
-                      "description": "ze środowiska (ustawia poprzednie zapytanie)"
-                    },
-                    {
-                      "key": "current",
-                      "value": "temperature_2m,relative_humidity_2m,wind_speed_10m",
-                      "description": "zmienne bieżącej pogody"
-                    },
-                    {
-                      "key": "timezone",
-                      "value": "Europe/Warsaw",
-                      "description": "strefa czasowa"
-                    }
-                  ]
-                }
-              }
-            }
+      "name": "ECHO - nagłówki",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Student",
+            "value": "pss-student"
+          }
+        ],
+        "url": {
+          "raw": "https://postman-echo.com/headers?Accept=application/json&X-Student=pss-student",
+          "protocol": "https",
+          "host": [
+            "postman-echo",
+            "com"
           ],
-          "description": "Zmienne: {{nazwa}} w URL-u, nagłówkach i treści. Zakresy od najszerszego: global → collection → environment → data → local; przy tej samej nazwie wygrywa najwęższy."
-        },
-        {
-          "name": "2. Łańcuch zapytań i autoryzacja dziedziczona (Library API)",
-          "item": [
-            {
-              "name": "POST — dodaj książkę i zapisz jej id",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "// Skrypt pre-request: wykonuje się PRZED wysłaniem zapytania.",
-                      "// Tworzy unikalny tytuł (z datą i godziną), żeby odróżnić książki z kolejnych uruchomień.",
-                      "// pm.variables.set tworzy zmienną lokalną — istnieje tylko w tym zapytaniu (lub w bieżącym runie).",
-                      "pm.variables.set(\"book_title\", `REST w praktyce ${new Date().toISOString()}`);"
-                    ]
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 201 Created\", () => {",
-                      "    pm.response.to.have.status(201);",
-                      "});",
-                      "const book = pm.response.json();",
-                      "pm.test(\"Tytuł i autor pochodzą ze zmiennych book_title i student_tag\", () => {",
-                      "    pm.expect(book.title).to.eql(pm.variables.get(\"book_title\"));",
-                      "    pm.expect(book.author).to.eql(pm.variables.get(\"student_tag\"));",
-                      "    pm.expect(book.checkedOut).to.be.false;",
-                      "});",
-                      "// Najważniejszy krok łańcucha: zapisujemy id nowej książki w zmiennej kolekcji.",
-                      "pm.collectionVariables.set(\"book_id\", book.id);"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books"
-                  ]
-                },
-                "description": "Autoryzacja: Inherit auth from parent (klucz API ustawiony na folderze). Skrypt pre-request tworzy zmienną lokalną `book_title` użytą w treści zapytania.",
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"title\": \"{{book_title}}\",\n  \"author\": \"{{student_tag}}\",\n  \"genre\": \"pss-lab\",\n  \"yearPublished\": 2026\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "name": "GET — pobierz książkę po id",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Pobrano książkę utworzoną w poprzednim kroku\", () => {",
-                      "    pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get(\"book_id\"));",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "{{book_id}}",
-                      "description": "zapisane przez POST"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "PATCH — wypożycz książkę",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Książka jest wypożyczona (checkedOut = true)\", () => {",
-                      "    pm.expect(pm.response.json().checkedOut).to.be.true;",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "{{book_id}}",
-                      "description": "zapisane przez POST"
-                    }
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"checkedOut\": true\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "name": "GET — wyszukaj swoje wypożyczone książki",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "pm.test(\"Na liście jest nasza wypożyczona książka\", () => {",
-                      "    const ids = pm.response.json().map(book => book.id);",
-                      "    pm.expect(ids).to.include(pm.collectionVariables.get(\"book_id\"));",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books?search={{student_tag}}&checkedOut=true",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books"
-                  ],
-                  "query": [
-                    {
-                      "key": "search",
-                      "value": "{{student_tag}}",
-                      "description": "nasz znacznik autora"
-                    },
-                    {
-                      "key": "checkedOut",
-                      "value": "true",
-                      "description": "tylko wypożyczone"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "DELETE — usuń książkę",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 204 No Content\", () => {",
-                      "    pm.response.to.have.status(204);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "DELETE",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "{{book_id}}",
-                      "description": "zapisane przez POST"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "GET — książka po usunięciu (404)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 404 Not Found\", () => {",
-                      "    pm.response.to.have.status(404);",
-                      "});",
-                      "pm.test(\"Komunikat błędu zawiera id książki\", () => {",
-                      "    pm.expect(pm.response.json().message).to.include(pm.collectionVariables.get(\"book_id\"));",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "{{book_id}}",
-                      "description": "id usuniętej książki"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "POST — bez klucza API (No Auth → 401)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 401 Unauthorized\", () => {",
-                      "    pm.response.to.have.status(401);",
-                      "});",
-                      "pm.test(\"Komunikat wskazuje brakujący nagłówek api-key\", () => {",
-                      "    pm.expect(pm.response.json().message).to.include(\"api-key\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books"
-                  ]
-                },
-                "description": "To zapytanie ma własne ustawienie No Auth, które nadpisuje autoryzację folderu.",
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"title\": \"Książka bez klucza API\",\n  \"author\": \"{{student_tag}}\",\n  \"genre\": \"pss-lab\",\n  \"yearPublished\": 2026\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "auth": {
-                  "type": "noauth"
-                }
-              }
-            },
-            {
-              "name": "POST — brak wymaganego pola genre (400)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 400 Bad Request\", () => {",
-                      "    pm.response.to.have.status(400);",
-                      "});",
-                      "pm.test(\"Serwer wskazuje brakujące pole genre\", () => {",
-                      "    pm.expect(pm.response.json().message).to.include(\"genre\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"title\": \"Książka bez gatunku\",\n  \"author\": \"{{student_tag}}\",\n  \"yearPublished\": 2026\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "name": "PATCH — książka ze stałej kolekcji (403)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 403 Forbidden\", () => {",
-                      "    pm.response.to.have.status(403);",
-                      "});",
-                      "pm.test(\"Serwer wyjaśnia, że to stała kolekcja\", () => {",
-                      "    pm.expect(pm.response.json().message).to.include(\"permanent collection\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "{{permanent_book_id}}",
-                      "description": "książka stała"
-                    }
-                  ]
-                },
-                "description": "Klucz jest poprawny (uwierzytelnienie OK), ale tej książki nie wolno zmieniać (brak uprawnień): 401 ≠ 403.",
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"checkedOut\": false\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              }
-            }
+          "path": [
+            "headers"
           ],
-          "description": "Autoryzacja API Key ustawiona RAZ na tym folderze: nagłówek `api-key` = {{library_api_key}} (zmienna środowiska, typ secret). Zapytania dziedziczą ją (Inherit auth from parent).",
-          "auth": {
-            "type": "apikey",
-            "apikey": [
-              {
-                "key": "key",
-                "value": "api-key",
-                "type": "string"
-              },
-              {
-                "key": "value",
-                "value": "{{library_api_key}}",
-                "type": "string"
-              },
-              {
-                "key": "in",
-                "value": "header",
-                "type": "string"
-              }
-            ]
+          "query": [
+            {
+              "key": "Accept",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student",
+              "value": "pss-student"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Echo - POST JSON",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"device\": \"czujnik-01\",\r\n    \"temperature\": 21.5,\r\n    \"unit\": \"C\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
           }
         },
-        {
-          "name": "3. Walidacja schematu JSON",
-          "item": [
-            {
-              "name": "NBP — schemat odpowiedzi z kursem waluty",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "// Prosty schemat JSON Schema draft-07 (Postman sprawdza go biblioteką Ajv 6: draft-04/06/07).",
-                      "// Nie kopiuj schematów z OpenAPI 3.1 (FastAPI) — to JSON Schema 2020-12, Ajv 6 go nie obsługuje.",
-                      "const schema = {",
-                      "    $schema: \"http://json-schema.org/draft-07/schema#\",",
-                      "    type: \"object\",",
-                      "    required: [\"table\", \"currency\", \"code\", \"rates\"],",
-                      "    properties: {",
-                      "        table: { type: \"string\", enum: [\"A\"] },",
-                      "        currency: { type: \"string\" },",
-                      "        code: { type: \"string\", pattern: \"^[A-Z]{3}$\" },",
-                      "        rates: {",
-                      "            type: \"array\",",
-                      "            minItems: 1,",
-                      "            items: {",
-                      "                type: \"object\",",
-                      "                required: [\"no\", \"effectiveDate\", \"mid\"],",
-                      "                properties: {",
-                      "                    no: { type: \"string\" },",
-                      "                    effectiveDate: { type: \"string\", pattern: \"^\\\\d{4}-\\\\d{2}-\\\\d{2}$\" },",
-                      "                    mid: { type: \"number\", exclusiveMinimum: 0 }",
-                      "                }",
-                      "            }",
-                      "        }",
-                      "    }",
-                      "};",
-                      "",
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "pm.test(\"Odpowiedź jest zgodna ze schematem JSON\", () => {",
-                      "    pm.response.to.have.jsonSchema(schema);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Connection",
-                    "value": "close"
-                  }
-                ],
-                "url": {
-                  "raw": "{{nbp_url}}/exchangerates/rates/a/{{currency_code}}/",
-                  "host": [
-                    "{{nbp_url}}"
-                  ],
-                  "path": [
-                    "exchangerates",
-                    "rates",
-                    "a",
-                    "{{currency_code}}",
-                    ""
-                  ]
-                }
-              }
-            },
-            {
-              "name": "Library API — schemat książki",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "const bookSchema = {",
-                      "    $schema: \"http://json-schema.org/draft-07/schema#\",",
-                      "    type: \"object\",",
-                      "    required: [\"id\", \"title\", \"author\", \"genre\", \"yearPublished\",",
-                      "               \"checkedOut\", \"isPermanentCollection\", \"createdAt\"],",
-                      "    properties: {",
-                      "        id: { type: \"string\" },",
-                      "        title: { type: \"string\" },",
-                      "        author: { type: \"string\" },",
-                      "        genre: { type: \"string\" },",
-                      "        yearPublished: { type: \"integer\" },",
-                      "        checkedOut: { type: \"boolean\" },",
-                      "        isPermanentCollection: { type: \"boolean\" },",
-                      "        createdAt: { type: \"string\" }",
-                      "    }",
-                      "};",
-                      "",
-                      "pm.test(\"Status 200 OK\", () => {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "pm.test(\"Książka jest zgodna ze schematem JSON\", () => {",
-                      "    pm.response.to.have.jsonSchema(bookSchema);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "{{permanent_book_id}}",
-                      "description": "książka stała"
-                    }
-                  ]
-                }
-              }
-            }
+        "url": {
+          "raw": "https://postman-echo.com/post",
+          "protocol": "https",
+          "host": [
+            "postman-echo",
+            "com"
           ],
-          "description": "pm.response.to.have.jsonSchema(schema) — Postman używa Ajv 6 (JSON Schema draft-04/06/07)."
-        },
-        {
-          "name": "4. Testy negatywne",
-          "item": [
-            {
-              "name": "NBP — nieistniejąca waluta (404)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 404 Not Found\", () => {",
-                      "    pm.response.to.have.status(404);",
-                      "});",
-                      "pm.test(\"Błąd jest zwykłym tekstem, a nie JSON-em\", () => {",
-                      "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
-                      "    pm.expect(pm.response.text()).to.include(\"Brak danych\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Connection",
-                    "value": "close"
-                  }
-                ],
-                "url": {
-                  "raw": "{{nbp_url}}/exchangerates/rates/a/xyz/",
-                  "host": [
-                    "{{nbp_url}}"
-                  ],
-                  "path": [
-                    "exchangerates",
-                    "rates",
-                    "a",
-                    "xyz",
-                    ""
-                  ]
-                }
-              }
-            },
-            {
-              "name": "NBP — zakres dat ponad limit (400)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 400 Bad Request\", () => {",
-                      "    pm.response.to.have.status(400);",
-                      "});",
-                      "pm.test(\"Komunikat mówi o przekroczonym limicie dni\", () => {",
-                      "    pm.expect(pm.response.text()).to.match(/limit/i);",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Connection",
-                    "value": "close"
-                  }
-                ],
-                "url": {
-                  "raw": "{{nbp_url}}/exchangerates/rates/a/eur/2024-01-01/2025-06-01/?format=json",
-                  "host": [
-                    "{{nbp_url}}"
-                  ],
-                  "path": [
-                    "exchangerates",
-                    "rates",
-                    "a",
-                    "eur",
-                    "2024-01-01",
-                    "2025-06-01",
-                    ""
-                  ],
-                  "query": [
-                    {
-                      "key": "format",
-                      "value": "json",
-                      "description": "format odpowiedzi"
-                    }
-                  ]
-                },
-                "description": "Dokumentacja NBP podaje limit 93 dni, serwis odrzuca dopiero ponad 367 dni (stan 27.09.2026)."
-              }
-            },
-            {
-              "name": "Open-Meteo — szerokość geograficzna poza zakresem (400)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 400 Bad Request\", () => {",
-                      "    pm.response.to.have.status(400);",
-                      "});",
-                      "pm.test(\"Błąd opisany w JSON (pola error i reason)\", () => {",
-                      "    const json = pm.response.json();",
-                      "    pm.expect(json.error).to.be.true;",
-                      "    pm.expect(json.reason).to.include(\"Latitude\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{meteo_url}}/forecast?latitude=100&longitude=18.0076&current=temperature_2m",
-                  "host": [
-                    "{{meteo_url}}"
-                  ],
-                  "path": [
-                    "forecast"
-                  ],
-                  "query": [
-                    {
-                      "key": "latitude",
-                      "value": "100",
-                      "description": "poza zakresem -90..90"
-                    },
-                    {
-                      "key": "longitude",
-                      "value": "18.0076",
-                      "description": "Bydgoszcz"
-                    },
-                    {
-                      "key": "current",
-                      "value": "temperature_2m",
-                      "description": "temperatura"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "Library API — nieistniejąca książka (404)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 404 Not Found\", () => {",
-                      "    pm.response.to.have.status(404);",
-                      "});",
-                      "pm.test(\"Komunikat błędu w JSON\", () => {",
-                      "    pm.expect(pm.response.json().message).to.include(\"not found\");",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{library_url}}/books/:id",
-                  "host": [
-                    "{{library_url}}"
-                  ],
-                  "path": [
-                    "books",
-                    ":id"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "00000000-0000-4000-8000-000000000000",
-                      "description": "poprawny UUID, brak książki"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "JSONPlaceholder — nieistniejący wpis (404)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Status 404 Not Found\", () => {",
-                      "    pm.response.to.have.status(404);",
-                      "});",
-                      "pm.test(\"Pusta treść odpowiedzi ({})\", () => {",
-                      "    pm.expect(pm.response.json()).to.be.empty;",
-                      "});"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{jsonplaceholder_url}}/posts/9999",
-                  "host": [
-                    "{{jsonplaceholder_url}}"
-                  ],
-                  "path": [
-                    "posts",
-                    "9999"
-                  ]
-                }
-              }
-            }
-          ],
-          "description": "Test negatywny sprawdza, że API poprawnie odrzuca złe dane: właściwy kod 4xx i czytelny komunikat."
-        },
-        {
-          "name": "5. Testy sterowane danymi",
-          "item": [
-            {
-              "name": "NBP — kurs waluty z pliku danych (currency_code)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "// Wartości z pliku danych (dane/waluty-nbp.csv) odczytuje pm.iterationData.get(\"kolumna\").",
-                      "// Kolumna currency_code trafia też do {{currency_code}} w URL-u (zakres data > environment > collection).",
-                      "// Bez pliku danych (zwykłe Send w aplikacji) pm.iterationData.get zwraca undefined — działają wartości domyślne.",
-                      "const code = pm.variables.get(\"currency_code\");",
-                      "const expectedStatus = Number(pm.iterationData.get(\"expected_status\") || 200);",
-                      "const expectedName = pm.iterationData.get(\"currency_name\");",
-                      "",
-                      "pm.test(`Waluta ${code}: status ${expectedStatus}`, () => {",
-                      "    pm.response.to.have.status(expectedStatus);",
-                      "});",
-                      "",
-                      "if (expectedStatus === 200) {",
-                      "    pm.test(`Waluta ${code}: kod i nazwa zgodne z plikiem danych`, () => {",
-                      "        const json = pm.response.json();",
-                      "        pm.expect(json.code).to.eql(code.toUpperCase());",
-                      "        if (expectedName) {",
-                      "            pm.expect(json.currency).to.eql(expectedName);",
-                      "        }",
-                      "        pm.expect(json.rates[0].mid).to.be.a(\"number\").and.above(0);",
-                      "    });",
-                      "} else {",
-                      "    pm.test(`Waluta ${code}: komunikat „Brak danych”`, () => {",
-                      "        pm.expect(pm.response.text()).to.include(\"Brak danych\");",
-                      "    });",
-                      "}"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Connection",
-                    "value": "close"
-                  }
-                ],
-                "url": {
-                  "raw": "{{nbp_url}}/exchangerates/rates/a/{{currency_code}}/",
-                  "host": [
-                    "{{nbp_url}}"
-                  ],
-                  "path": [
-                    "exchangerates",
-                    "rates",
-                    "a",
-                    "{{currency_code}}",
-                    ""
-                  ]
-                },
-                "description": "Jedno zapytanie, wiele przypadków testowych: każdy wiersz pliku `dane/waluty-nbp.csv` to osobna iteracja. W planie Free pliku danych nie wczytasz w Collection Runnerze aplikacji — uruchom folder w Postman CLI lub Newmanie z opcją `-d` (polecenia w opisie folderu). Zwykłe Send działa bez pliku: waluta ze środowiska, oczekiwany status 200."
-              }
-            }
-          ],
-          "description": "Uruchamiaj TYLKO ten folder z plikiem danych (Newman: `--folder`, Postman CLI: `-i`). Cała kolekcja z `-d` powtórzyłaby wszystkie zapytania (także zapisy w Library API) dla każdego wiersza.\n\nPolecenia (w katalogu z kolekcją; tak samo w bash/zsh i PowerShell):\n\n```\nnpx --yes newman@6.2.2 run publiczne-api.postman_collection.json -e publiczne.postman_environment.json --folder \"5. Testy sterowane danymi\" -d dane/waluty-nbp.csv\n\npostman collection run publiczne-api.postman_collection.json -e publiczne.postman_environment.json -i \"5. Testy sterowane danymi\" -d dane/waluty-nbp.csv --no-report-events\n```"
+          "path": [
+            "post"
+          ]
         }
-      ],
-      "description": "Wymaga środowiska „PSS — publiczne API” (plik publiczne.postman_environment.json).\n\nSkrypt tego folderu (zakładka Scripts → Post-response folderu) sprawdza czas odpowiedzi każdego zapytania z LAB 02; próg ustawia zmienna kolekcji `max_response_time_ms`.",
+      },
+      "response": []
+    },
+    {
+      "name": "ECHO - Basic Auth OK",
+      "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "postman",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "password",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://postman-echo.com/basic-auth",
+          "protocol": "https",
+          "host": [
+            "postman-echo",
+            "com"
+          ],
+          "path": [
+            "basic-auth"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Echo - Basic Auth 401",
+      "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "postman",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "zlehaslo",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://postman-echo.com/basic-auth",
+          "protocol": "https",
+          "host": [
+            "postman-echo",
+            "com"
+          ],
+          "path": [
+            "basic-auth"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "NBP - kurs EUR",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://api.nbp.pl/api/exchangerates/rates/a/eur/?format=json",
+          "protocol": "https",
+          "host": [
+            "api",
+            "nbp",
+            "pl"
+          ],
+          "path": [
+            "api",
+            "exchangerates",
+            "rates",
+            "a",
+            "eur",
+            ""
+          ],
+          "query": [
+            {
+              "key": "format",
+              "value": "json"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "NBP - kursy średnie",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://api.nbp.pl/api/exchangerates/rates/a/usd/last/5/?format=json",
+          "protocol": "https",
+          "host": [
+            "api",
+            "nbp",
+            "pl"
+          ],
+          "path": [
+            "api",
+            "exchangerates",
+            "rates",
+            "a",
+            "usd",
+            "last",
+            "5",
+            ""
+          ],
+          "query": [
+            {
+              "key": "format",
+              "value": "json"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "NBP - błąd 404",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://api.nbp.pl/api/exchangerates/rates/a/xyz/",
+          "protocol": "https",
+          "host": [
+            "api",
+            "nbp",
+            "pl"
+          ],
+          "path": [
+            "api",
+            "exchangerates",
+            "rates",
+            "a",
+            "xyz",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Open-Meteo - pogoda w Bydgoszczy",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://api.open-meteo.com/v1/forecast?latitude=53.1235&longitude=18.0076&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone=Europe/Warsaw",
+          "protocol": "https",
+          "host": [
+            "api",
+            "open-meteo",
+            "com"
+          ],
+          "path": [
+            "v1",
+            "forecast"
+          ],
+          "query": [
+            {
+              "key": "latitude",
+              "value": "53.1235"
+            },
+            {
+              "key": "longitude",
+              "value": "18.0076"
+            },
+            {
+              "key": "current",
+              "value": "temperature_2m,relative_humidity_2m,wind_speed_10m"
+            },
+            {
+              "key": "timezone",
+              "value": "Europe/Warsaw"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "JSONPlaceholder - GET",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/posts?userId=1",
+          "protocol": "https",
+          "host": [
+            "jsonplaceholder",
+            "typicode",
+            "com"
+          ],
+          "path": [
+            "posts"
+          ],
+          "query": [
+            {
+              "key": "userId",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "JSONPlacehoder - POST",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Pomiar z czujnika\",\r\n  \"body\": \"Temperatura 21.5 °C\",\r\n  \"userId\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/posts",
+          "protocol": "https",
+          "host": [
+            "jsonplaceholder",
+            "typicode",
+            "com"
+          ],
+          "path": [
+            "posts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "JSONPlaceholder 3",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/posts/101",
+          "protocol": "https",
+          "host": [
+            "jsonplaceholder",
+            "typicode",
+            "com"
+          ],
+          "path": [
+            "posts",
+            "101"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "JSONPlaceholder 4 - DELETE",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/posts/1",
+          "protocol": "https",
+          "host": [
+            "jsonplaceholder",
+            "typicode",
+            "com"
+          ],
+          "path": [
+            "posts",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "JSONPlaceholder 4 - GET",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/posts/1",
+          "protocol": "https",
+          "host": [
+            "jsonplaceholder",
+            "typicode",
+            "com"
+          ],
+          "path": [
+            "posts",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Library API 1",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://library-api.postmanlabs.com/books/29cd820f-82f9-4b45-a7f4-0924111b5b89",
+          "protocol": "https",
+          "host": [
+            "library-api",
+            "postmanlabs",
+            "com"
+          ],
+          "path": [
+            "books",
+            "29cd820f-82f9-4b45-a7f4-0924111b5b89"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Library API 2",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "api-key",
+            "value": "postmanrulz"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Moja pierwsza książka w API\",\r\n  \"author\": \"tajemnica-lasu\",\r\n  \"genre\": \"pss-lab\",\r\n  \"yearPublished\": 2026\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://library-api.postmanlabs.com/books",
+          "protocol": "https",
+          "host": [
+            "library-api",
+            "postmanlabs",
+            "com"
+          ],
+          "path": [
+            "books"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Library API 3",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://library-api.postmanlabs.com/books/a03be9e3-9c94-4599-9622-d66263063a7a",
+          "protocol": "https",
+          "host": [
+            "library-api",
+            "postmanlabs",
+            "com"
+          ],
+          "path": [
+            "books",
+            "a03be9e3-9c94-4599-9622-d66263063a7a"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Library API 4",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "api-key",
+            "value": "postmanrulz"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"checkedOut\": true}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://library-api.postmanlabs.com/books/a03be9e3-9c94-4599-9622-d66263063a7a",
+          "protocol": "https",
+          "host": [
+            "library-api",
+            "postmanlabs",
+            "com"
+          ],
+          "path": [
+            "books",
+            "a03be9e3-9c94-4599-9622-d66263063a7a"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Library API 5",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "api-key",
+            "value": "postmanrulz"
+          }
+        ],
+        "url": {
+          "raw": "https://library-api.postmanlabs.com/books/a03be9e3-9c94-4599-9622-d66263063a7a?=",
+          "protocol": "https",
+          "host": [
+            "library-api",
+            "postmanlabs",
+            "com"
+          ],
+          "path": [
+            "books",
+            "a03be9e3-9c94-4599-9622-d66263063a7a"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": ""
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Library API 6",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://library-api.postmanlabs.com/books/a03be9e3-9c94-4599-9622-d66263063a7a?=",
+          "protocol": "https",
+          "host": [
+            "library-api",
+            "postmanlabs",
+            "com"
+          ],
+          "path": [
+            "books",
+            "a03be9e3-9c94-4599-9622-d66263063a7a"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": ""
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Library API 7",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "api-key",
+            "value": "postmanrulz",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Moja pierwsza książka w API\",\r\n  \"author\": \"tajemnica-lasu\",\r\n  \"genre\": \"pss-lab\",\r\n  \"yearPublished\": 2026\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://library-api.postmanlabs.com/books",
+          "protocol": "https",
+          "host": [
+            "library-api",
+            "postmanlabs",
+            "com"
+          ],
+          "path": [
+            "books"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Test Results - trzy testy zaliczone",
       "event": [
         {
           "listen": "test",
           "script": {
             "type": "text/javascript",
             "exec": [
-              "// Skrypt folderu LAB 02: wykonuje się po każdym zapytaniu z tego folderu.",
-              "const maxTime = Number(pm.variables.get(\"max_response_time_ms\"));",
-              "pm.test(`Czas odpowiedzi poniżej ${maxTime} ms`, () => {",
-              "    pm.expect(pm.response.responseTime).to.be.below(maxTime);",
-              "});"
+              "pm.test(\"Status 201 Created\", () => {\n    pm.response.to.have.status(201);\n});\npm.test(\"Nagłówek Location wskazuje nowy zasób\", () => {\n    pm.expect(pm.response.headers.get(\"Location\")).to.match(/\\/posts\\/\\d+$/);\n});\nconst post = pm.response.json();\npm.test(\"Serwer nadał identyfikator\", () => {\n    pm.expect(post.id).to.be.a(\"number\");\n});\n// Zapisujemy id, żeby w następnym zapytaniu sprawdzić, czy wpis naprawdę istnieje.\npm.collectionVariables.set(\"post_id\", post.id);"
             ]
           }
         }
-      ]
-    }
-  ],
-  "auth": {
-    "type": "noauth"
-  },
-  "event": [
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "// Skrypt kolekcji: wykonuje się po KAŻDYM zapytaniu, przed skryptem folderu i zapytania.",
-          "// Wynik zobaczysz w Postman Console (View → Show Postman Console) albo w logu Newmana.",
-          "console.log(`${pm.info.requestName} → ${pm.response.code} (${pm.response.responseTime} ms)`);"
-        ]
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "echo_url",
-      "value": "https://postman-echo.com",
-      "type": "string"
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Pomiar z czujnika\",\n  \"body\": \"Temperatura 21.5 °C\",\n  \"userId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{jsonplaceholder_url}}/posts",
+          "host": [
+            "{{jsonplaceholder_url}}"
+          ],
+          "path": [
+            "posts"
+          ]
+        },
+        "description": "JSONPlaceholder odpowiada 201 Created i nadaje id 101, ale **niczego nie zapisuje**."
+      },
+      "response": []
     },
     {
-      "key": "jsonplaceholder_url",
-      "value": "https://jsonplaceholder.typicode.com",
-      "type": "string"
+      "name": "Test Results - 404",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 404 — JSONPlaceholder niczego nie zapisał\", () => {\n    pm.response.to.have.status(404);\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{jsonplaceholder_url}}/posts/{{post_id}}",
+          "host": [
+            "{{jsonplaceholder_url}}"
+          ],
+          "path": [
+            "posts",
+            "{{post_id}}"
+          ]
+        },
+        "description": "Na LAB 01 wpisz ręcznie `/posts/101`. Zmienna `post_id` pochodzi ze skryptu POST."
+      },
+      "response": []
     },
     {
-      "key": "library_url",
-      "value": "https://library-api.postmanlabs.com",
-      "type": "string"
-    },
-    {
-      "key": "nbp_url",
-      "value": "https://api.nbp.pl/api",
-      "type": "string"
-    },
-    {
-      "key": "meteo_url",
-      "value": "https://api.open-meteo.com/v1",
-      "type": "string"
-    },
-    {
-      "key": "geocoding_url",
-      "value": "https://geocoding-api.open-meteo.com/v1",
-      "type": "string"
-    },
-    {
-      "key": "permanent_book_id",
-      "value": "29cd820f-82f9-4b45-a7f4-0924111b5b89",
-      "type": "string"
-    },
-    {
-      "key": "currency_code",
-      "value": "usd",
-      "type": "string"
-    },
-    {
-      "key": "max_response_time_ms",
-      "value": "3000",
-      "type": "string"
-    },
-    {
-      "key": "post_id",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "book_id",
-      "value": "",
-      "type": "string"
+      "name": "Import polecenia cURL",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/xml"
+          }
+        ],
+        "url": {
+          "raw": "https://api.nbp.pl/api/exchangerates/rates/a/eur/",
+          "protocol": "https",
+          "host": [
+            "api",
+            "nbp",
+            "pl"
+          ],
+          "path": [
+            "api",
+            "exchangerates",
+            "rates",
+            "a",
+            "eur",
+            ""
+          ]
+        },
+        "description": "Generated from cURL: curl -H \"Accept: application/xml\" https://api.nbp.pl/api/exchangerates/rates/a/eur/"
+      },
+      "response": []
     }
   ]
 }
